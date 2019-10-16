@@ -26,21 +26,24 @@ namespace Minisat {
     template<class T> struct MkIndexDefault {
         typename vec<T>::Size operator()(T t) const { return (typename vec<T>::Size)t; }
     };
-    
+
     template<class K, class V, class MkIndex = MkIndexDefault<K> >
     class IntMap {
         vec<V>   map;
         MkIndex  index;
+        int _iter_index = 0;
     public:
         explicit IntMap(MkIndex _index = MkIndex()) : index(_index){}
-        
+
         bool     has       (K k) const { return index(k) < map.size(); }
 
         const V& operator[](K k) const { assert(has(k)); return map[index(k)]; }
         V&       operator[](K k)       { assert(has(k)); return map[index(k)]; }
+        const V& access(int i) const { assert(i < map.size()); return map[i]; }
+        V&       access(int i)       { assert(i < map.size()); return map[i]; }
 
-        const V* begin  () const { return &map[0]; }
-        const V* end    () const { return &map[map.size()]; }
+        const V* begin  () const { _iter_index = 0; return &map[0]; }
+        const V* end    () const { _iter_index = 0; return &map[map.size()]; }
         V*       begin  ()       { return &map[0]; }
         V*       end    ()       { return &map[map.size()]; }
 
@@ -52,6 +55,8 @@ namespace Minisat {
         void     clear  (bool dispose = false) { map.clear(dispose); }
         void     moveTo (IntMap& to)           { map.moveTo(to.map); to.index = index; }
         void     copyTo (IntMap& to) const     { map.copyTo(to.map); to.index = index; }
+
+        unsigned int size() { return map.size(); }
     };
 
 
@@ -101,6 +106,22 @@ namespace Minisat {
     };
     #endif
 
+    template<class K, class V, class MkIndex = MkIndexDefault<K>>
+    class IntMapIterator {
+        const IntMap<K, V, MkIndex>& map;
+        unsigned int _index;
+
+        public:
+        explicit IntMapIterator<K, V, MkIndex>(const IntMap<K, V, MkIndex>& imap) : map(imap), _index(0) {}
+
+        void operator++(){ _index++; }
+        const V& operator*() const { return map.access(_index);}
+
+        bool operator<(unsigned int index) const { return (_index < index);}
+
+        unsigned int size() { return map.size();}
+
+    };
 //=================================================================================================
 } // namespace Minisat
 #endif
