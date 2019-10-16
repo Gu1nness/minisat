@@ -69,9 +69,20 @@ public:
 
     bool    implies      (const vec<Lit>& assumps, vec<Lit>& out);
 
+    // Returns the clause pool size
+    virtual unsigned int clausesSize();
+    // Returns the learnts clauses pool size
+    virtual unsigned int learntSize();
+    // Return the problem size
+    virtual unsigned int problemSize();
+    // Return the 2-watch literals size.
+    virtual unsigned int watcherSize();
+
     // Iterate over clauses and top-level assignments:
     ClauseIterator clausesBegin() const;
     ClauseIterator clausesEnd()   const;
+    ClauseIterator learntBegin() const;
+    ClauseIterator learntEnd()   const;
     TrailIterator  trailBegin()   const;
     TrailIterator  trailEnd  ()   const;
 
@@ -164,6 +175,7 @@ protected:
         Watcher(CRef cr, Lit p) : cref(cr), blocker(p) {}
         bool operator==(const Watcher& w) const { return cref == w.cref; }
         bool operator!=(const Watcher& w) const { return cref != w.cref; }
+        unsigned int size() const { return sizeof(*this);}
     };
 
     struct WatcherDeleted
@@ -171,6 +183,7 @@ protected:
         const ClauseAllocator& ca;
         WatcherDeleted(const ClauseAllocator& _ca) : ca(_ca) {}
         bool operator()(const Watcher& w) const { return ca[w.cref].mark() == 1; }
+        unsigned int size() const { return sizeof(*this);}
     };
 
     struct VarOrderLt {
@@ -389,6 +402,8 @@ inline bool     Solver::okay          ()      const   { return ok; }
 
 inline ClauseIterator Solver::clausesBegin() const { return ClauseIterator(ca, &clauses[0]); }
 inline ClauseIterator Solver::clausesEnd  () const { return ClauseIterator(ca, &clauses[clauses.size()]); }
+inline ClauseIterator Solver::learntBegin() const { return ClauseIterator(ca, &learnts[0]); }
+inline ClauseIterator Solver::learntEnd  () const { return ClauseIterator(ca, &learnts[learnts.size()]); }
 inline TrailIterator  Solver::trailBegin  () const { return TrailIterator(&trail[0]); }
 inline TrailIterator  Solver::trailEnd    () const { 
     return TrailIterator(&trail[decisionLevel() == 0 ? trail.size() : trail_lim[0]]); }

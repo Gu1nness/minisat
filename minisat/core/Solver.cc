@@ -150,6 +150,34 @@ void Solver::releaseVar(Lit l)
     }
 }
 
+unsigned int Solver::learntSize() {
+    unsigned int size = 0;
+    for(ClauseIterator ci = learntBegin(); ci != learntEnd(); ++ci) {
+        size += (*ci).memSize();
+    }
+    return size;
+}
+
+unsigned int Solver::clausesSize() {
+    unsigned int size = 0;
+    for(ClauseIterator ci = clausesBegin(); ci != clausesEnd(); ++ci) {
+        size += (*ci).memSize();
+    }
+    return size;
+}
+
+unsigned int Solver::problemSize() {
+    unsigned int size = 0;
+    size += clausesSize();
+    size += clauses_literals * sizeof(Lit);
+    return size;
+}
+
+unsigned int Solver::watcherSize() {
+    unsigned int size = watches.size();
+    return size;
+}
+
 
 bool Solver::addClause_(vec<Lit>& ps)
 {
