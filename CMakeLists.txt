@@ -41,8 +41,11 @@ add_definitions(-D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS)
 set(MINISAT_LIB_SOURCES
     minisat/utils/Options.cc
     minisat/utils/System.cc
+    minisat/utils/Macros.h
+    minisat/utils/Logging.h
     minisat/core/Solver.cc
-    minisat/simp/SimpSolver.cc)
+    minisat/simp/SimpSolver.cc
+    )
 
 add_library(minisat-lib-static STATIC ${MINISAT_LIB_SOURCES})
 add_library(minisat-lib-shared SHARED ${MINISAT_LIB_SOURCES})
