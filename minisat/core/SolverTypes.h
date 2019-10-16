@@ -22,8 +22,11 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #ifndef Minisat_SolverTypes_h
 #define Minisat_SolverTypes_h
 
+#include <iostream>
+
 #include <assert.h>
 
+#include "minisat/utils/Logging.h"
 #include "minisat/mtl/IntTypes.h"
 #include "minisat/mtl/Alg.h"
 #include "minisat/mtl/Vec.h"
@@ -52,15 +55,17 @@ struct Lit {
     int     x;
 
     // Use this as a constructor:
-    friend Lit mkLit(Var var, bool sign = false);
+    //friend Lit mkLit(Var var, bool sign = false);
 
     bool operator == (Lit p) const { return x == p.x; }
     bool operator != (Lit p) const { return x != p.x; }
     bool operator <  (Lit p) const { return x < p.x;  } // '<' makes p, ~p adjacent in the ordering.
+    inline  std::string toStr () const { char n[2]; sprintf(n, "%d", x); return n;}
+    unsigned int size() { return sizeof(*this); }
 };
 
 
-inline  Lit  mkLit     (Var var, bool sign) { Lit p; p.x = var + var + (int)sign; return p; }
+inline  Lit  mkLit     (Var var, bool sign = false) { Lit p; p.x = var + var + (int)sign; return p; }
 inline  Lit  operator ~(Lit p)              { Lit q; q.x = p.x ^ 1; return q; }
 inline  Lit  operator ^(Lit p, bool b)      { Lit q; q.x = p.x ^ (unsigned int)b; return q; }
 inline  bool sign      (Lit p)              { return p.x & 1; }
@@ -216,6 +221,22 @@ public:
 
     Lit          subsumes    (const Clause& other) const;
     void         strengthen  (Lit p);
+
+    inline  std::string toStr() const {
+        std::string str;
+        for(int i = 0; i < size(); i++) {
+            if(!str.empty()) str.append(" ");
+            str.append(data[i].lit.toStr());
+        }
+        return str;
+    }
+
+    unsigned int memSize() const {
+        unsigned int size = 0;
+        size += sizeof(*this);
+        size += 8 * this->size();
+        return size;
+    }
 };
 
 
@@ -352,6 +373,25 @@ class OccLists
         occs   .clear(free);
         dirty  .clear(free);
         dirties.clear(free);
+    }
+
+    unsigned int size() {
+        unsigned int sz = 0;
+
+        // occs;
+        sz += sizeof(occs);
+        for(auto it = IntMapIterator<K, Vec, MkIndex>(occs); it < occs.size(); ++it){
+            sz += sizeof(unsigned int);
+            sz += (*it).size() * 8;
+        }
+        // dirty;
+        sz += sizeof(dirty);
+        sz += dirty.size() * (sizeof(unsigned int) + sizeof(char));
+        // dirties;
+        sz += dirties.size() * dirties[0].size();
+        // deleted;
+        sz += sizeof(deleted);
+        return sz;
     }
 };
 
