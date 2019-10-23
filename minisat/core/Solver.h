@@ -26,6 +26,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "minisat/mtl/Alg.h"
 #include "minisat/mtl/IntMap.h"
 #include "minisat/utils/Options.h"
+#include "minisat/utils/StatsCollector.h"
 #include "minisat/core/SolverTypes.h"
 
 
@@ -77,6 +78,9 @@ public:
     virtual unsigned int problemSize();
     // Return the 2-watch literals size.
     virtual unsigned int watcherSize();
+
+    // Statistics
+    StatsCollector stats;
 
     // Iterate over clauses and top-level assignments:
     ClauseIterator clausesBegin() const;

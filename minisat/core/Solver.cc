@@ -155,6 +155,7 @@ unsigned int Solver::learntSize() {
     for(ClauseIterator ci = learntBegin(); ci != learntEnd(); ++ci) {
         size += (*ci).memSize();
     }
+    stats.newLearnt(size);
     return size;
 }
 
@@ -167,14 +168,14 @@ unsigned int Solver::clausesSize() {
 }
 
 unsigned int Solver::problemSize() {
-    unsigned int size = 0;
-    size += clausesSize();
-    size += clauses_literals * sizeof(Lit);
+    unsigned int size = clausesSize();
+    stats.set_problemSize(size);
     return size;
 }
 
 unsigned int Solver::watcherSize() {
     unsigned int size = watches.size();
+    stats.newWatches(size);
     return size;
 }
 
@@ -819,6 +820,8 @@ lbool Solver::search(int nof_conflicts)
             newDecisionLevel();
             uncheckedEnqueue(next);
         }
+        learntSize();
+        watcherSize();
     }
 }
 

@@ -234,7 +234,7 @@ public:
     unsigned int memSize() const {
         unsigned int size = 0;
         size += sizeof(*this);
-        size += 8 * this->size();
+        size += sizeof(Lit) * this->size();
         return size;
     }
 };
