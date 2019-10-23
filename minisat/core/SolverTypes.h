@@ -380,9 +380,9 @@ class OccLists
 
         // occs;
         sz += sizeof(occs);
-        for(auto it = IntMapIterator<K, Vec, MkIndex>(occs); it < occs.size(); ++it){
+        for(Vec& V : occs){
             sz += sizeof(unsigned int);
-            sz += (*it).size() * 8;
+            sz += V.size() * sizeof(V[0]);
         }
         // dirty;
         sz += sizeof(dirty);

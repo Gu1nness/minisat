@@ -106,22 +106,6 @@ namespace Minisat {
     };
     #endif
 
-    template<class K, class V, class MkIndex = MkIndexDefault<K>>
-    class IntMapIterator {
-        const IntMap<K, V, MkIndex>& map;
-        unsigned int _index;
-
-        public:
-        explicit IntMapIterator<K, V, MkIndex>(const IntMap<K, V, MkIndex>& imap) : map(imap), _index(0) {}
-
-        void operator++(){ _index++; }
-        const V& operator*() const { return map.access(_index);}
-
-        bool operator<(unsigned int index) const { return (_index < index);}
-
-        unsigned int size() { return map.size();}
-
-    };
 //=================================================================================================
 } // namespace Minisat
 #endif
