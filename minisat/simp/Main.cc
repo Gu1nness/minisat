@@ -97,7 +97,7 @@ int main(int argc, char** argv)
             printf("|                                                                             |\n"); }
         
         parse_DIMACS(in, S, (bool)strictp);
-        LOG(INFO) << "Size of problem " << S.problemSize();
+        S.problemSize();
         gzclose(in);
         FILE* res = (argc >= 3) ? fopen(argv[2], "wb") : NULL;
 
@@ -159,6 +159,7 @@ int main(int argc, char** argv)
             fclose(res);
         }
         S.stats.syntheticOutput();
+        S.stats.outputCSV("stats.csv");
 
 #ifdef NDEBUG
         exit(ret == l_True ? 10 : ret == l_False ? 20 : 0);     // (faster than "return", which will invoke the destructor for 'Solver')

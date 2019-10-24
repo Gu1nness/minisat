@@ -17,7 +17,7 @@
 #include <iostream>
 
 #define INFO "INFO"
-#define DEBUG "DEBUG"
+#define DEBUG_L "DEBUG"
 #define WARNING "WARNING"
 
 #define DCHECK_GE(value, cond) (assert((value) >= (cond)))

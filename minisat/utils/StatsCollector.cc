@@ -35,7 +35,7 @@ void StatsCollector::outputWatches(const char* filename) {
 
 void StatsCollector::outputCSV(const char* filename) {
     std::ofstream fd(filename, std::ofstream::out);
-    fd << "Learnt,Watches,Assignment" << std::endl;
+    fd << "Learnt,Watches" << std::endl;
     for(unsigned int i = 0; i < _learntSize.size(); i++) {
         fd << _learntSize[i] << "," << _watchesSize[i]  << std::endl;
     }
