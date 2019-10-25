@@ -16,14 +16,8 @@ namespace Minisat {
         unsigned int _max_learnt = 0;
         unsigned int _max_watches = 0;
 
-        unsigned int _mean_learnt = 0;
-        unsigned int _mean_watches = 0;
-
-        void _compute_means() {
-            _mean_learnt /= _learntSize.size();
-            _mean_watches /= _watchesSize.size();
-        };
-
+        double _mean_learnt = 0;
+        double _mean_watches = 0;
 
         public:
             explicit StatsCollector() : _problemSize(0) {}

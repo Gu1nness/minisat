@@ -81,6 +81,7 @@ public:
 
     // Statistics
     StatsCollector stats;
+    const char* stats_output_name;
 
     // Iterate over clauses and top-level assignments:
     ClauseIterator clausesBegin() const;

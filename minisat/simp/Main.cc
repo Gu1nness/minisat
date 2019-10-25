@@ -45,6 +45,8 @@ static void SIGINT_exit(int) {
     if (solver->verbosity > 0){
         solver->printStats();
         printf("\n"); printf("*** INTERRUPTED ***\n"); }
+    solver->stats.syntheticOutput();
+    solver->stats.outputCSV(solver->stats_output_name);
     _exit(1); }
 
 
@@ -127,6 +129,8 @@ int main(int argc, char** argv)
                 S.printStats();
                 printf("\n"); }
             printf("UNSATISFIABLE\n");
+            S.stats.syntheticOutput();
+            S.stats.outputCSV(S.stats_output_name);
             exit(20);
         }
 
@@ -145,7 +149,7 @@ int main(int argc, char** argv)
             S.printStats();
             printf("\n"); }
         printf(ret == l_True ? "SATISFIABLE\n" : ret == l_False ? "UNSATISFIABLE\n" : "INDETERMINATE\n");
-        if (res != NULL){
+/*        if (res != NULL){
             if (ret == l_True){
                 fprintf(res, "SAT\n");
                 for (int i = 0; i < S.nVars(); i++)
@@ -157,9 +161,23 @@ int main(int argc, char** argv)
             else
                 fprintf(res, "INDET\n");
             fclose(res);
+        }*/
+        res = stdout;
+        if (res != NULL){
+            if (ret == l_True){
+                fprintf(res, "s SATISFIABLE\nv ");
+                for (int i = 0; i < S.nVars(); i++)
+                    if (S.model[i] != l_Undef)
+                        fprintf(res, "%s%s%d", (i==0)?"":" ", (S.model[i]==l_True)?"":"-", i+1);
+                fprintf(res, " 0\n");
+            }else if (ret == l_False)
+                fprintf(res, "s UNSATISFIABLE\n");
+            else
+                fprintf(res, "s INDETERMINATE\n");
+            fclose(res);
         }
         S.stats.syntheticOutput();
-        S.stats.outputCSV("stats.csv");
+        S.stats.outputCSV(S.stats_output_name);
 
 #ifdef NDEBUG
         exit(ret == l_True ? 10 : ret == l_False ? 20 : 0);     // (faster than "return", which will invoke the destructor for 'Solver')
