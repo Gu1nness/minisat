@@ -49,9 +49,9 @@ void StatsCollector::syntheticOutput() {
     fprintf(stderr, "| Problem size: %11u B |\n", _problemSize);
     fprintf(stderr, "|-----------------------------|\n");
     fprintf(stderr, "| Max learnt: %13u B |\n", _max_learnt);
-    fprintf(stderr, "| Mean learnt: %12.0f B |\n", _mean_learnt);
+    fprintf(stderr, "| Mean learnt: %12.0Lf B |\n", _mean_learnt);
     fprintf(stderr, "|-----------------------------|\n");
     fprintf(stderr, "| Max Watches: %12u B |\n", _max_watches);
-    fprintf(stderr, "| Mean Watches: %11.0f B |\n", _mean_watches);
+    fprintf(stderr, "| Mean Watches: %11.0Lf B |\n", _mean_watches);
     fprintf(stderr, "+=============================+\n");
 }

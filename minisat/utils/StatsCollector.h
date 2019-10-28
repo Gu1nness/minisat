@@ -16,8 +16,8 @@ namespace Minisat {
         unsigned int _max_learnt = 0;
         unsigned int _max_watches = 0;
 
-        double _mean_learnt = 0;
-        double _mean_watches = 0;
+        long double _mean_learnt = 0;
+        long double _mean_watches = 0;
 
         public:
             explicit StatsCollector() : _problemSize(0) {}
