@@ -45,7 +45,6 @@ static IntOption     opt_restart_first     (_cat, "rfirst",      "The base resta
 static DoubleOption  opt_restart_inc       (_cat, "rinc",        "Restart interval increase factor", 2, DoubleRange(1, false, HUGE_VAL, false));
 static DoubleOption  opt_garbage_frac      (_cat, "gc-frac",     "The fraction of wasted memory allowed before a garbage collection is triggered",  0.20, DoubleRange(0, false, HUGE_VAL, false));
 static IntOption     opt_min_learnts_lim   (_cat, "min-learnts", "Minimum learnt clause limit",  0, IntRange(0, INT32_MAX));
-static StringOption  opt_csv_name          (_cat, "csv-name",    "Name of the CSV output", "stats.csv");
 
 
 //=================================================================================================
@@ -56,8 +55,7 @@ Solver::Solver() :
 
     // Parameters (user settable):
     //
-    stats_output_name(opt_csv_name)
-  , verbosity        (0)
+    verbosity        (0)
   , var_decay        (opt_var_decay)
   , clause_decay     (opt_clause_decay)
   , random_var_freq  (opt_random_var_freq)
@@ -152,8 +150,8 @@ void Solver::releaseVar(Lit l)
     }
 }
 
-unsigned int Solver::learntSize() {
-    unsigned int size = 0;
+long unsigned int Solver::learntSize() {
+    long unsigned int size = learnts.capacity();
     for(ClauseIterator ci = learntBegin(); ci != learntEnd(); ++ci) {
         size += (*ci).memSize();
     }
@@ -161,22 +159,22 @@ unsigned int Solver::learntSize() {
     return size;
 }
 
-unsigned int Solver::clausesSize() {
-    unsigned int size = 0;
+long unsigned int Solver::clausesSize() {
+    long unsigned int size = 0;
     for(ClauseIterator ci = clausesBegin(); ci != clausesEnd(); ++ci) {
         size += (*ci).memSize();
     }
     return size;
 }
 
-unsigned int Solver::problemSize() {
-    unsigned int size = clausesSize();
+long unsigned int Solver::problemSize() {
+    long unsigned int size = clausesSize();
     stats.set_problemSize(size);
     return size;
 }
 
-unsigned int Solver::watcherSize() {
-    unsigned int size = watches.size();
+long unsigned int Solver::watcherSize() {
+    long unsigned int size = watches.size();
     stats.newWatches(size);
     return size;
 }

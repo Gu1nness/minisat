@@ -2,19 +2,25 @@
 
 using namespace Minisat;
 
-void StatsCollector::newLearnt(unsigned int ls) {
+void StatsCollector::newLearnt(long unsigned int ls) {
+    long double old_mean = _mean_learnt;
     if (ls > _max_learnt) {
         _max_learnt = ls;
     }
     _learntSize.push_back(ls);
     _mean_learnt += ((ls - _mean_learnt) / _learntSize.size());
+    _variance_learnt += (ls - old_mean)*(ls - _mean_learnt);
+    _stdev_learnt = sqrt(_variance_learnt / _learntSize.size());
 }
-void StatsCollector::newWatches(unsigned int ws) {
+void StatsCollector::newWatches(long unsigned int ws) {
+    long double old_mean = _mean_watches;
     if (ws > _max_watches) {
         _max_watches = ws;
     }
     _watchesSize.push_back(ws);
     _mean_watches += ((ws - _mean_watches) / _watchesSize.size());
+    _variance_watches += (ws - old_mean)*(ws - _mean_watches);
+    _stdev_watches = sqrt(_variance_watches / _watchesSize.size());
 }
 
 void StatsCollector::outputLearnt(const char* filename) {
@@ -42,16 +48,24 @@ void StatsCollector::outputCSV(const char* filename) {
     fd.close();
 }
 
-void StatsCollector::syntheticOutput() {
-    fprintf(stderr, "+=============================+\n");
-    fprintf(stderr, "|         Statisticts         |\n");
-    fprintf(stderr, "|-----------------------------|\n");
-    fprintf(stderr, "| Problem size: %11u B |\n", _problemSize);
-    fprintf(stderr, "|-----------------------------|\n");
-    fprintf(stderr, "| Max learnt: %13u B |\n", _max_learnt);
-    fprintf(stderr, "| Mean learnt: %12.0Lf B |\n", _mean_learnt);
-    fprintf(stderr, "|-----------------------------|\n");
-    fprintf(stderr, "| Max Watches: %12u B |\n", _max_watches);
-    fprintf(stderr, "| Mean Watches: %11.0Lf B |\n", _mean_watches);
-    fprintf(stderr, "+=============================+\n");
+void StatsCollector::syntheticOutput(const char* filename="stderr") {
+    FILE* file;
+    if (strcmp(filename, "stderr") == 0) {
+        file = stderr;
+    } else {
+        file = fopen(filename, "w");
+    }
+    fprintf(file, "+=============================+\n");
+    fprintf(file, "|         Statisticts         |\n");
+    fprintf(file, "|-----------------------------|\n");
+    fprintf(file, "| Problem size: %11lu B |\n", _problemSize);
+    fprintf(file, "|-----------------------------|\n");
+    fprintf(file, "| Max learnt: %13lu B |\n", _max_learnt);
+    fprintf(file, "| Mean learnt: %12.0Lf B |\n", _mean_learnt);
+    fprintf(file, "| Std dev learnt: %9.0Lf B |\n", _stdev_learnt);
+    fprintf(file, "|-----------------------------|\n");
+    fprintf(file, "| Max Watches: %12lu B |\n", _max_watches);
+    fprintf(file, "| Mean Watches: %11.0Lf B |\n", _mean_watches);
+    fprintf(file, "| Std dev Watches: %8.0Lf B |\n", _stdev_watches);
+    fprintf(file, "+=============================+\n");
 }

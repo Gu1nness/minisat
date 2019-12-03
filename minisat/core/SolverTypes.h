@@ -231,10 +231,10 @@ public:
         return str;
     }
 
-    unsigned int memSize() const {
-        unsigned int size = 0;
+    long unsigned int memSize() const {
+        long unsigned int size = 0;
         size += sizeof(*this);
-        size += sizeof(Lit) * this->size();
+        size += (sizeof(Lit)+sizeof(float) + sizeof(uint32_t) + sizeof(CRef)) * this->size();
         return size;
     }
 };

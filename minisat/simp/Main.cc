@@ -45,7 +45,7 @@ static void SIGINT_exit(int) {
     if (solver->verbosity > 0){
         solver->printStats();
         printf("\n"); printf("*** INTERRUPTED ***\n"); }
-    solver->stats.syntheticOutput();
+    solver->stats.syntheticOutput(solver->stats_synthetic_name);
     solver->stats.outputCSV(solver->stats_output_name);
     _exit(1); }
 
@@ -78,6 +78,21 @@ int main(int argc, char** argv)
 
         S.verbosity = verb;
         
+        std::string str_name(argv[1]);
+        std::string delimiter = "/";
+        size_t pos = 0;
+        std::string token;
+        while ((pos = str_name.find(delimiter)) != std::string::npos) {
+            token = str_name.substr(0, pos);
+            str_name.erase(0, pos + delimiter.length());
+        }
+        str_name.insert(0, "/data/roudin/minisat/");
+        S.stats_output_name = str_name.c_str();
+        std::string str_name_synth = str_name;
+        str_name.append(".csv");
+        str_name_synth.append(".synth");
+        S.stats_synthetic_name = str_name_synth.c_str();
+
         solver = &S;
         // Use signal handlers that forcibly quit until the solver will be able to respond to
         // interrupts:
@@ -129,7 +144,7 @@ int main(int argc, char** argv)
                 S.printStats();
                 printf("\n"); }
             printf("UNSATISFIABLE\n");
-            S.stats.syntheticOutput();
+            S.stats.syntheticOutput(S.stats_synthetic_name);
             S.stats.outputCSV(S.stats_output_name);
             exit(20);
         }
@@ -148,8 +163,15 @@ int main(int argc, char** argv)
         if (S.verbosity > 0){
             S.printStats();
             printf("\n"); }
-        printf(ret == l_True ? "SATISFIABLE\n" : ret == l_False ? "UNSATISFIABLE\n" : "INDETERMINATE\n");
-/*        if (res != NULL){
+        printf(ret == l_True ? "s SATISFIABLE\n" : ret == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
+        if (ret == l_True){
+            printf("v ");
+            for (int i = 0; i < S.nVars(); i++)
+                if (S.model[i] != l_Undef)
+                    printf("%s%s%d", (i==0)?"":" ", (S.model[i]==l_True)?"":"-", i+1);
+            printf(" 0\n");
+        }
+        if (res != NULL){
             if (ret == l_True){
                 fprintf(res, "SAT\n");
                 for (int i = 0; i < S.nVars(); i++)
@@ -161,22 +183,8 @@ int main(int argc, char** argv)
             else
                 fprintf(res, "INDET\n");
             fclose(res);
-        }*/
-        res = stdout;
-        if (res != NULL){
-            if (ret == l_True){
-                fprintf(res, "s SATISFIABLE\nv ");
-                for (int i = 0; i < S.nVars(); i++)
-                    if (S.model[i] != l_Undef)
-                        fprintf(res, "%s%s%d", (i==0)?"":" ", (S.model[i]==l_True)?"":"-", i+1);
-                fprintf(res, " 0\n");
-            }else if (ret == l_False)
-                fprintf(res, "s UNSATISFIABLE\n");
-            else
-                fprintf(res, "s INDETERMINATE\n");
-            fclose(res);
         }
-        S.stats.syntheticOutput();
+        S.stats.syntheticOutput(S.stats_synthetic_name);
         S.stats.outputCSV(S.stats_output_name);
 
 #ifdef NDEBUG
@@ -185,8 +193,9 @@ int main(int argc, char** argv)
         return (ret == l_True ? 10 : ret == l_False ? 20 : 0);
 #endif
     } catch (OutOfMemoryException&){
-        printf("===============================================================================\n");
-        printf("INDETERMINATE\n");
+        printf("c ===============================================================================\n");
+        printf("c Out of memory\n");
+        printf("s UNKNOWN\n");
         exit(0);
     }
 }

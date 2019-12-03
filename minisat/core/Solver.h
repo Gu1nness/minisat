@@ -71,17 +71,18 @@ public:
     bool    implies      (const vec<Lit>& assumps, vec<Lit>& out);
 
     // Returns the clause pool size
-    virtual unsigned int clausesSize();
+    long unsigned int clausesSize();
     // Returns the learnts clauses pool size
-    virtual unsigned int learntSize();
+    long unsigned int learntSize();
     // Return the problem size
-    virtual unsigned int problemSize();
+    long unsigned int problemSize();
     // Return the 2-watch literals size.
-    virtual unsigned int watcherSize();
+    long unsigned int watcherSize();
 
     // Statistics
     StatsCollector stats;
     const char* stats_output_name;
+    const char* stats_synthetic_name;
 
     // Iterate over clauses and top-level assignments:
     ClauseIterator clausesBegin() const;
